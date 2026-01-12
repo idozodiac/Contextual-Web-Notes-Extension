@@ -48,7 +48,10 @@ export class NotesService {
     return this.prisma.note.update({
       where: { id },
       data: {
-        content: updateNoteDto.content !== undefined ? updateNoteDto.content : note.content,
+        content:
+          updateNoteDto.content !== undefined
+            ? updateNoteDto.content
+            : note.content,
         x: updateNoteDto.x !== undefined ? updateNoteDto.x : note.x,
         y: updateNoteDto.y !== undefined ? updateNoteDto.y : note.y,
       },

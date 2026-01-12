@@ -1,6 +1,34 @@
+import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ContentApp from './ContentApp';
 import './content.css';
+
+// Wrapper component to ensure QueryClient is created inside React context
+const AppWithProviders: React.FC = () => {
+  // Create QueryClient using useState with lazy initializer to ensure it's only created once
+  const [queryClient] = React.useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 5, // 5 minutes
+            refetchOnWindowFocus: false,
+            retry: 1,
+          },
+          mutations: {
+            retry: 1,
+          },
+        },
+      })
+  );
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ContentApp />
+    </QueryClientProvider>
+  );
+};
 
 // Create a shadow root container
 const createShadowRoot = () => {
@@ -48,7 +76,7 @@ const init = () => {
   try {
     const { mountPoint } = createShadowRoot();
     const root = createRoot(mountPoint);
-    root.render(<ContentApp />);
+    root.render(<AppWithProviders />);
     console.log('[Contextual Notes] Content script initialized successfully!');
     console.log('[Contextual Notes] Mount point:', mountPoint);
   } catch (error) {
